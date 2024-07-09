@@ -16,7 +16,7 @@ export default function HomeScreen() {
     const getData = async () => {
       try {
         const participanteData = await axios.get(
-          "http://10.0.2.2:3000/participantes/3"
+          "http://10.0.2.2:3000/participantes/1"
         );
         setParticipante(participanteData.data.data);
       } catch (error) {

@@ -15,4 +15,28 @@ export interface Participante {
     CREATED_AT: string
     UPDATED_AT: any
   }
+
+  export interface Evento {
+    ID_EVENTO: number
+    NOMBRE: string
+    ID_PONENTE: number
+    ID_UBICACION: number
+    ID_HORARIO: number
+    DESCRIPCION: string
+    CREATED_AT: string
+    UPDATED_AT: string
+  }
+  export interface Ponente {
+    ID_PONENTE: number
+    ID_TIPO_DOCUMENTO: number
+    DOCUMENTO: string
+    NOMBRES: string
+    APELLIDOS: string
+    ENTIDAD: string
+    BIOGRAFIA: string
+    EMAIL: string
+    TELEFONO: string
+    CREATED_AT: string
+    UPDATED_AT: string
+  }
   
