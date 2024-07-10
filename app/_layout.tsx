@@ -1,36 +1,28 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+import Login from './(tabs)/login';
+import TabLayoutAdministrador from "./(tabs)/administrador/_layout";
+import TabLayoutColaborador from "./(tabs)/colaborador/_layout";
+import TabLayoutUsuario from "./(tabs)/usuario/_layout";
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+export type RootStackParamList = {
+  "(tabs)/login": undefined;
+  "(tabs)/usuario": undefined;
+  "(tabs)/administrador": undefined;
+  "(tabs)/colaborador": undefined;
+};
+const Stack = createStackNavigator<RootStackParamList>();
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
+function AppNavigator() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+    
+      <Stack.Navigator initialRouteName="(tabs)/login">
+        <Stack.Screen name="(tabs)/login" component={Login} options={{ headerShown: false }}/>
+        <Stack.Screen name="(tabs)/usuario" component={TabLayoutUsuario} options={{ headerShown: false }}/>
+        <Stack.Screen name="(tabs)/administrador" component={TabLayoutAdministrador} options={{ headerShown: false }}/>
+        <Stack.Screen name="(tabs)/colaborador" component={TabLayoutColaborador} options={{ headerShown: false }}/>
+      </Stack.Navigator>
   );
 }
+
+export default AppNavigator;

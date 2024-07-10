@@ -1,20 +1,24 @@
-import { Tabs } from 'expo-router';
 import React from 'react';
 
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import HomeAdministrador from "./index";
+import Eventos from "./eventos";
+import Usuarios from "./usuarios";
 
-export default function TabLayout() {
+const Tab = createBottomTabNavigator()
+export default function TabLayoutAdministrador() {
   const colorScheme = useColorScheme();
 
   return (
-    <Tabs
+    <Tab.Navigator
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
       }}>
-      <Tabs.Screen
+      <Tab.Screen
         name="index"
         options={{
           title: 'Home',
@@ -22,26 +26,29 @@ export default function TabLayout() {
             <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
           ),
         }}
+        component={HomeAdministrador}
       />
-      <Tabs.Screen
-        name="chat"
+      <Tab.Screen
+        name="eventos"
         options={{
-          title: 'Chat',
+          title: 'Eventos',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
           ),
         }}
+        component={Eventos}
       />
+      <Tab.Screen
+      name="usuarios"
+      options={{
+        title: 'Usuarios',
+        tabBarIcon: ({ color, focused }) => (
+          <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+        ),
+      }}
+      component={Usuarios}
+    />
 
-      <Tabs.Screen
-        name="codigoQR"
-        options={{
-          title: 'Codigo QR',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
-          ),
-        }}
-      />
-    </Tabs>
+    </Tab.Navigator>
   );
 }
