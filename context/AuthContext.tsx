@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useContext, useState, useEffect } from 'react';
+import { Text } from 'react-native';
 
 export enum Role {
   ADMIN = 'Administrador',
@@ -101,7 +102,7 @@ export const AuthProvider = ({ children }: any) => {
   };
 
   if (loading) {
-    return <div>Loading...</div>; // Puedes reemplazar esto con un componente de carga
+    return <Text>Loading...</Text>;
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
