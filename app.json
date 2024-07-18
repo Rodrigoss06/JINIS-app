@@ -7,6 +7,11 @@
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
+    "extra": {
+      "eas": {
+        "projectId": "73188652-2633-4f86-900d-05f5791529a1"
+      }
+    },
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
@@ -19,7 +24,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.rodrigoss06.JINISapp"
     },
     "web": {
       "bundler": "metro",
@@ -27,7 +33,15 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": true
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

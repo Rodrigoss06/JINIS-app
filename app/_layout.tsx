@@ -1,28 +1,50 @@
-import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
-import Login from './(tabs)/login';
-import TabLayoutAdministrador from "./(tabs)/administrador/_layout";
-import TabLayoutColaborador from "./(tabs)/colaborador/_layout";
-import TabLayoutUsuario from "./(tabs)/usuario/_layout";
+import React, { useEffect } from "react";
+import { Stack, useRouter, useSegments } from "expo-router";
+import { AuthProvider, Role, useAuth } from "@/context/AuthContext";
+const StackLayout =()=>{
+  const {authState} = useAuth()
+  const segments = useSegments()
+  const router = useRouter()
+  useEffect(()=>{
+    const inAuthGroup = segments[0]==='(administrador)'
+    if (inAuthGroup &&  !authState?.authenticated) {
+      router.replace( '/')
+      
+    }else if (authState?.authenticated) {
+      switch (authState.role) {
+        case "Administrador":
+          router.replace("/(administrador)")
+          break;
+        case "Colaborador":
+          router.replace("/(colaborador)")
+          break;
+        case "Usuario":
+          router.replace("/(usuario)")
+          break;
+      
+        default:
+          break;
+      }
+    }
+  },[authState])
+  return(
+    <Stack>
+    <Stack.Screen name="login"  options={{ headerShown: false }} />
+    <Stack.Screen name="(administrador)" redirect={authState?.role !== Role.ADMIN} options={{ headerShown: false }} />
+    <Stack.Screen name="(colaborador)" redirect={authState?.role !== Role.COLAB} options={{ headerShown: false }} />
+    <Stack.Screen name="(usuario)" redirect={authState?.role !== Role.USER}  options={{ headerShown: false }} />
+    </Stack>
+  )
+}
 
-export type RootStackParamList = {
-  "(tabs)/login": undefined;
-  "(tabs)/usuario": undefined;
-  "(tabs)/administrador": undefined;
-  "(tabs)/colaborador": undefined;
-};
-const Stack = createStackNavigator<RootStackParamList>();
+function RootLayout() {
 
-function AppNavigator() {
+
   return (
-    
-      <Stack.Navigator initialRouteName="(tabs)/login">
-        <Stack.Screen name="(tabs)/login" component={Login} options={{ headerShown: false }}/>
-        <Stack.Screen name="(tabs)/usuario" component={TabLayoutUsuario} options={{ headerShown: false }}/>
-        <Stack.Screen name="(tabs)/administrador" component={TabLayoutAdministrador} options={{ headerShown: false }}/>
-        <Stack.Screen name="(tabs)/colaborador" component={TabLayoutColaborador} options={{ headerShown: false }}/>
-      </Stack.Navigator>
+    <AuthProvider>
+      <StackLayout/>
+    </AuthProvider>
   );
 }
 
-export default AppNavigator;
+export default RootLayout;

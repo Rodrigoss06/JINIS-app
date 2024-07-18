@@ -1,19 +1,17 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
+import { Pressable, Text, StyleSheet, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../app/_layout'; // Ajusta la ruta según tu estructura
+import { useRouter } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
 
-type LogoutScreenNavigationProp = StackNavigationProp<RootStackParamList, '(tabs)/login'>;
 
 const CerrarSesion = () => {
-  const navigation = useNavigation<LogoutScreenNavigationProp>();
-
+  const router = useRouter()
+  const {onLogout} =useAuth()
   const handleLogout = async () => {
     try {
-      await AsyncStorage.removeItem('token_login');
-      navigation.navigate('(tabs)/login');
+      onLogout!()
+      // router.navigate('login');
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     }
@@ -21,9 +19,9 @@ const CerrarSesion = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+      <Pressable style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 };

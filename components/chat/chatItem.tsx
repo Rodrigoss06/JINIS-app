@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, Pressable, View } from "react-native";
 import { ThemedView } from "../styleComponents/ThemedView";
 import { Evento, Ponente } from "@/interfaces";
 import axios from "axios";
@@ -11,17 +11,16 @@ function ChatItem({ evento }: { evento: Evento }) {
   useEffect(() => {
     const getData = async () => {
       const ponenteData = await axios.get(
-        `http://10.0.2.2:3000/ponentes/${evento.ID_PONENTE}`
+        `https://jinis-api.vercel.app/ponentes/${evento.ID_PONENTE}`
       );
       setPonente(ponenteData.data.data);
-      console.log(ponenteData.data.data);
       setLoading(false);
     };
     getData();
   }, []);
   return (
     //agrega rutas dinamicassssssssssssssssssssssssssssssssssssssssssssssssssss
-    <TouchableOpacity >
+    <Pressable >
       <ThemedView
         lightColor="#FFFFFF"
         darkColor="#000000"
@@ -41,7 +40,7 @@ function ChatItem({ evento }: { evento: Evento }) {
           {loading ? "" : ponente?.ENTIDAD}
         </ThemedText>
       </ThemedView>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 const styles = StyleSheet.create({

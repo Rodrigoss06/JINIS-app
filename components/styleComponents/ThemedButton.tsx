@@ -1,4 +1,4 @@
-// import { Text, type TextProps, StyleSheet, TouchableOpacity } from 'react-native';
+// import { Text, type TextProps, StyleSheet, Pressable } from 'react-native';
 
 // import { useThemeColor } from '@/hooks/useThemeColor';
 
@@ -18,7 +18,7 @@
 //   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
 
 //   return (
-//     <TouchableOpacity
+//     <Pressable
 //       style={[
 //         { color },
 //         type === 'default' ? styles.default : undefined,
