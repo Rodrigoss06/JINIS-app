@@ -8,20 +8,21 @@ import {
   FlatList,
   Button,
 } from "react-native";
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ThemedView } from "@/components/styleComponents/ThemedView";
 import axios from "axios";
-import { Evento, Participante } from "@/interfaces";
+import { Evento, Horario, Participante } from "@/interfaces";
 import EscanerQR from "@/components/EscanerQr";
 import { Ionicons } from "@expo/vector-icons";
 
 function RegistrarAsistencia() {
-  const [showCamera,setShowCamera]= useState(false)
+  const [showCamera, setShowCamera] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [eventos, setEventos] = useState<Evento[]>([]);
+  const [eventosFiltrados,setEventosFiltrados] = useState<Evento[]>([])
+  const [horarios, setHorarios] = useState<Horario[]>([]);
   const [eventoSeleccionado, setEventoSeleccionado] = useState<Evento>();
   const [usuario, setUsuario] = useState<Participante>();
-  const [eventosAsistidos, setEventosAsistidos] = useState();
   const [DNI, setDNI] = useState("");
 
   const handleSubmit = async () => {
@@ -38,7 +39,7 @@ function RegistrarAsistencia() {
           }
         );
         if (asistenciaResponse) {
-          alert("asistencia marcada");
+          alert("Asistencia marcada");
         }
       }
     } catch (error) {
@@ -50,15 +51,18 @@ function RegistrarAsistencia() {
     const getData = async () => {
       const eventosData = await axios.get("https://jinis-api.vercel.app/eventos");
       setEventos(eventosData.data.data);
+      const horariosResponse = await axios.get("https://jinis-api.vercel.app/horarios");
+      setHorarios(horariosResponse.data.data);
     };
     getData();
   }, []);
+
   useEffect(() => {
     if (DNI) {
       const fetchUsuario = async () => {
         try {
-          const Usuarioresponse = await axios.get(`https://jinis-api.vercel.app/usuarios/dni/${DNI}`);
-          setUsuario(Usuarioresponse.data.data);
+          const usuarioResponse = await axios.get(`https://jinis-api.vercel.app/usuarios/dni/${DNI}`);
+          setUsuario(usuarioResponse.data.data);
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -67,50 +71,73 @@ function RegistrarAsistencia() {
     }
   }, [DNI]);
 
+  useEffect(() => {
+    // Obtener hora y fecha actual
+    const now = new Date();
+    const currentDate = now.toISOString().split('T')[0];
+    const currentTime = now.toTimeString().split(' ')[0].substring(0, 5);
+  
+    // Filtrar eventos que tienen un horario válido y que la hora actual esté entre la hora de inicio y fin, y la fecha coincida
+    const eventosConHorario = eventos.filter(evento => 
+      horarios.some(horario => {
+        const horarioFecha = new Date(horario.FECHA).toISOString().split('T')[0];
+        const horarioInicio = horario.HORA_INICIO.substring(0, 5);
+        const horarioFin = horario.HORA_FIN.substring(0, 5);
+  
+        return horario.ID_HORARIO === evento.ID_HORARIO &&
+               horarioFecha === currentDate &&
+               currentTime >= horarioInicio &&
+               currentTime <= horarioFin;
+      })
+    );
+    setEventosFiltrados(eventosConHorario);
+  }, [eventos, horarios]);
 
   return (
     <ThemedView style={styles.container}>
-    <Text style={styles.title}>Registrar Asistencia</Text>
-    <View style={styles.inputContainer}>
-      <TextInput
-        style={styles.input}
-        placeholder="DNI"
-        value={DNI}
-        onChangeText={setDNI}
-      />
-      <Pressable onPress={() => setShowCamera(true)} style={styles.icon}>
-        <Ionicons name="qr-code" size={24} />
-      </Pressable>
-    </View>
-    <Pressable onPress={() => setIsModalVisible(true)} style={styles.eventSelector}>
-      <Text>{eventoSeleccionado ? eventoSeleccionado.NOMBRE : "Seleccionar Evento"}</Text>
-    </Pressable>
-    <Pressable onPress={handleSubmit} style={styles.button}>
-      <Text style={styles.buttonText}>Registrar</Text>
-    </Pressable>
-    <Modal visible={isModalVisible} transparent>
-      <View style={styles.modalContent}>
-        <FlatList
-          data={eventos}
-          keyExtractor={(item) => String(item.ID_EVENTO)}
-          renderItem={({ item }) => (
-            <Pressable
-              onPress={() => {
-                setEventoSeleccionado(item);
-                setIsModalVisible(false);
-              }}
-              style={styles.item}
-            >
-              <Text>{item.NOMBRE}</Text>
-            </Pressable>
-          )}
+      <Text style={styles.title}>Registrar Asistencia</Text>
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="DNI"
+          value={DNI}
+          onChangeText={(e) => setDNI(e)}
         />
-        <Button title="Cerrar" onPress={() => setIsModalVisible(false)} />
+        <Pressable onPress={() => setShowCamera(true)} style={styles.icon}>
+          <Ionicons name="qr-code" size={24} color="#007bff" />
+        </Pressable>
       </View>
-    </Modal>
-    <Modal visible={showCamera} transparent>
-      <EscanerQR setShowCamera={()=>setShowCamera(!showCamera)} setData={setDNI} />
-    </Modal>
+      <Pressable onPress={() => setIsModalVisible(true)} style={styles.eventSelector}>
+        <Text style={styles.eventText}>
+          {eventoSeleccionado ? eventoSeleccionado.NOMBRE : "Seleccionar Evento"}
+        </Text>
+      </Pressable>
+      <Pressable onPress={handleSubmit} style={styles.button}>
+        <Text style={styles.buttonText}>Registrar</Text>
+      </Pressable>
+      <Modal visible={isModalVisible} transparent>
+        <View style={styles.modalContent}>
+          <FlatList
+            data={eventosFiltrados}
+            keyExtractor={(item) => String(item.ID_EVENTO)}
+            renderItem={({ item }) => (
+              <Pressable
+                onPress={() => {
+                  setEventoSeleccionado(item);
+                  setIsModalVisible(false);
+                }}
+                style={styles.item}
+              >
+                <Text>{item.NOMBRE}</Text>
+              </Pressable>
+            )}
+          />
+          <Button title="Cerrar" onPress={() => setIsModalVisible(false)} />
+        </View>
+      </Modal>
+      <Modal visible={showCamera} transparent>
+        <EscanerQR setShowCamera={() => setShowCamera(!showCamera)} setData={setDNI} />
+      </Modal>
       {usuario && (
         <View style={styles.userInfo}>
           <Text style={styles.userInfoTitle}>Información del Usuario</Text>
@@ -145,10 +172,11 @@ function RegistrarAsistencia() {
     </ThemedView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
     padding: 20,
     backgroundColor: "#f8f9fa",
@@ -157,16 +185,29 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
+    color: "#333",
   },
   inputContainer: {
     flexDirection: "row",
+    alignItems: "center",
     marginBottom: 15,
+    backgroundColor: "#fff",
+    borderRadius: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    padding: 10,
+    width:"30%",
+    maxWidth:1000
   },
   input: {
     flex: 1,
-    padding: 10,
-    borderWidth: 1,
+    height: 50,
+    paddingHorizontal: 10,
     borderColor: "#ccc",
+    borderWidth: 1,
     borderRadius: 5,
   },
   icon: {
@@ -180,16 +221,25 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 5,
     marginBottom: 15,
+    backgroundColor: "#e9ecef",
+    alignItems: "center",
+    width:"20%",
+    maxWidth:700
+  },
+  eventText: {
+    color: "#333",
+    fontSize: 16,
   },
   button: {
     backgroundColor: "#007bff",
-    padding: 10,
+    padding: 15,
     borderRadius: 5,
     alignItems: "center",
   },
   buttonText: {
     color: "#fff",
     fontSize: 16,
+    fontWeight: "bold",
   },
   modalContent: {
     flex: 1,
@@ -202,6 +252,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderBottomWidth: 1,
     borderColor: "#ccc",
+    width: '100%',
   },
   userInfo: {
     marginTop: 20,
@@ -213,11 +264,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+    width: '100%',
   },
   userInfoTitle: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
+    color: "#333",
   },
   table: {
     width: "100%",

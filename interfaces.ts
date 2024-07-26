@@ -80,3 +80,19 @@ export interface Participante {
     CREATED_AT: string
     UPDATED_AT: string
   }
+
+  export interface Mensaje {
+    ID_MENSAJE: number
+    CONTENIDO: string
+    CREATED_AT: string
+    ID_ROOM: number
+    ID_USUARIO: number
+  }
+  
+
+  export interface Room {
+    ID_ROOM: number
+    NOMBRE: string
+  }
+  
+  

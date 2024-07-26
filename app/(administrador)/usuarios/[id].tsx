@@ -1,16 +1,15 @@
-import ParallaxScrollView from "@/components/styleComponents/ParallaxScrollView";
-import { Ionicons } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
-  Image,
-  Platform,
   View,
   Text,
   ActivityIndicator,
   ScrollView,
+  Pressable,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
+import axios from "axios";
+import { useLocalSearchParams } from "expo-router";
 import {
   Evento,
   EventoAsistido,
@@ -18,8 +17,6 @@ import {
   TipoDocumento,
   TipoUsuario,
 } from "@/interfaces";
-import axios from "axios";
-import { useLocalSearchParams } from "expo-router";
 
 export default function EventoItem() {
   const { id } = useLocalSearchParams();
@@ -30,6 +27,7 @@ export default function EventoItem() {
   const [tipoUsuario, setTipoUsuario] = useState<TipoUsuario>();
   const [eventosAsistidos, setEventosAsistidos] = useState<EventoAsistido[]>([]);
   const [eventos, setEventos] = useState<Evento[]>([]);
+  const [maxEventos, setMaxEventos] = useState(2);
 
   useEffect(() => {
     const getData = async () => {
@@ -96,47 +94,49 @@ export default function EventoItem() {
             <>
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Información del Usuario</Text>
-                <Text style={styles.userDetail}>
-                  <Text style={styles.userDetailLabel}>Nombre: </Text>
-                  {usuario.NOMBRES} {usuario.APELLIDO_PATERNO} {usuario.APELLIDO_MATERNO}
-                </Text>
-                <Text style={styles.userDetail}>
-                  <Text style={styles.userDetailLabel}>DNI: </Text>
-                  {usuario.DNI}
-                </Text>
-                <Text style={styles.userDetail}>
-                  <Text style={styles.userDetailLabel}>Correo Electrónico: </Text>
-                  {usuario.CORREO_ELECTRONICO}
-                </Text>
-                <Text style={styles.userDetail}>
-                  <Text style={styles.userDetailLabel}>Teléfono: </Text>
-                  {usuario.TELEFONO}
-                </Text>
-                <Text style={styles.userDetail}>
-                  <Text style={styles.userDetailLabel}>Dirección: </Text>
-                  {usuario.DIRECCION}
-                </Text>
-                <Text style={styles.userDetail}>
-                  <Text style={styles.userDetailLabel}>Género: </Text>
-                  {usuario.GENERO}
-                </Text>
-                <Text style={styles.userDetail}>
-                  <Text style={styles.userDetailLabel}>Fecha de Nacimiento: </Text>
-                  {new Date(usuario.FECHA_NACIMIENTO).toLocaleDateString()}
-                </Text>
-                <Text style={styles.userDetail}>
-                  <Text style={styles.userDetailLabel}>Tipo de Documento: </Text>
-                  {tipoDocumento.DESCRIPCION}
-                </Text>
-                <Text style={styles.userDetail}>
-                  <Text style={styles.userDetailLabel}>Tipo de Usuario: </Text>
-                  {tipoUsuario.DESCRIPCION}
-                </Text>
+                <View style={styles.userInfo}>
+                  <Text style={styles.userDetail}>
+                    <Text style={styles.userDetailLabel}>Nombre: </Text>
+                    {usuario.NOMBRES} {usuario.APELLIDO_PATERNO} {usuario.APELLIDO_MATERNO}
+                  </Text>
+                  <Text style={styles.userDetail}>
+                    <Text style={styles.userDetailLabel}>DNI: </Text>
+                    {usuario.DNI}
+                  </Text>
+                  <Text style={styles.userDetail}>
+                    <Text style={styles.userDetailLabel}>Correo Electrónico: </Text>
+                    {usuario.CORREO_ELECTRONICO}
+                  </Text>
+                  <Text style={styles.userDetail}>
+                    <Text style={styles.userDetailLabel}>Teléfono: </Text>
+                    {usuario.TELEFONO}
+                  </Text>
+                  <Text style={styles.userDetail}>
+                    <Text style={styles.userDetailLabel}>Dirección: </Text>
+                    {usuario.DIRECCION}
+                  </Text>
+                  <Text style={styles.userDetail}>
+                    <Text style={styles.userDetailLabel}>Género: </Text>
+                    {usuario.GENERO}
+                  </Text>
+                  <Text style={styles.userDetail}>
+                    <Text style={styles.userDetailLabel}>Fecha de Nacimiento: </Text>
+                    {new Date(usuario.FECHA_NACIMIENTO).toLocaleDateString()}
+                  </Text>
+                  <Text style={styles.userDetail}>
+                    <Text style={styles.userDetailLabel}>Tipo de Documento: </Text>
+                    {tipoDocumento.DESCRIPCION}
+                  </Text>
+                  <Text style={styles.userDetail}>
+                    <Text style={styles.userDetailLabel}>Tipo de Usuario: </Text>
+                    {tipoUsuario.DESCRIPCION}
+                  </Text>
+                </View>
               </View>
 
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Eventos Asistidos</Text>
-                {eventosAsistidos.map((eventoAsistido) => (
+                {eventosAsistidos.slice(0, maxEventos).map((eventoAsistido) => (
                   <View
                     key={eventoAsistido.ID_EVENTO_ASISTIDO}
                     style={styles.eventItem}
@@ -150,6 +150,14 @@ export default function EventoItem() {
                     </Text>
                   </View>
                 ))}
+                {eventosAsistidos.length > maxEventos && (
+                  <Pressable
+                    style={styles.showMoreButton}
+                    onPress={() => setMaxEventos(maxEventos + 4)}
+                  >
+                    <Text style={styles.showMoreButtonText}>Mostrar Más</Text>
+                  </Pressable>
+                )}
               </View>
 
               <View style={styles.section}>
@@ -177,23 +185,33 @@ const styles = StyleSheet.create({
   },
   card: {
     padding: 16,
-    backgroundColor: "#fff",
+    borderRadius: 8,
+
+    marginBottom: 16,
+  },
+  section: {
+    marginBottom: 16,
+    padding: 16,
+    backgroundColor: "#e1dee6",
     borderRadius: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-    marginBottom: 16,
-  },
-  section: {
-    marginBottom: 16,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 8,
     color: "#333",
+  },
+  userInfo: {
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 16,
+    borderColor: "#ccc",
+    borderWidth: 1,
   },
   userDetail: {
     fontSize: 14,
@@ -206,7 +224,7 @@ const styles = StyleSheet.create({
   },
   eventItem: {
     padding: 10,
-    backgroundColor: "#e0e0e0",
+    backgroundColor: "#fff",
     borderRadius: 8,
     marginBottom: 8,
   },
@@ -218,6 +236,17 @@ const styles = StyleSheet.create({
   eventItemDate: {
     fontSize: 14,
     color: "#666",
+  },
+  showMoreButton: {
+    padding: 10,
+    backgroundColor: "#007bff",
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  showMoreButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   qrCodeContainer: {
     alignItems: "center",

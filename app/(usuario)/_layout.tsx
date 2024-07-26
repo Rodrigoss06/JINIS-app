@@ -43,6 +43,33 @@ export default function TabLayoutUsuario() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="chat/index"
+        options={{
+          title: "Chats",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "calendar" : "calendar-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="chat/[id]"
+        options={{
+          href:null,
+          
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={
+                focused ? "information-circle" : "information-circle-outline"
+              }
+              color={color}
+            />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

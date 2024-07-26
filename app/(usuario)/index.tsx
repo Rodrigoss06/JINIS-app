@@ -1,82 +1,102 @@
-import 'react-native-gesture-handler';
-
-import { Image, StyleSheet, Platform } from "react-native";
-
-import ParallaxScrollView from "@/components/styleComponents/ParallaxScrollView";
+import React from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StyleSheet, Text, View, ScrollView, Pressable } from "react-native";
 import { ThemedText } from "@/components/styleComponents/ThemedText";
 import { ThemedView } from "@/components/styleComponents/ThemedView";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Participante } from "@/interfaces";
-import CerrarSesion from '@/components/CerrarSesion';
+import { Evento, EventoAsistido, Participante } from "@/interfaces";
+import CerrarSesion from "@/components/CerrarSesion";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function HomeUsuario() {
-  const [participante, setParticipante] = useState<Participante>();
+export default function App() {
+  const [usuario, setUsuario] = useState<Participante>();
+  const [eventosAsistidos, setEventosAsistidos] = useState<EventoAsistido[]>([]);
+  const [eventos, setEventos] = useState<Evento[]>([]);
+  const [maxEventos, setMaxEventos] = useState(2);
+
+  const getEventoNombre = (idEvento: number) => {
+    const evento = eventos.find((e) => e.ID_EVENTO === idEvento);
+    return evento ? evento.NOMBRE : "Evento no encontrado";
+  };
+
   useEffect(() => {
     const getData = async () => {
       try {
-        const participanteData = await axios.get(
-          "https://jinis-api.vercel.app/usuarios/1"
-        );
-        setParticipante(participanteData.data.data);
+        const token = await AsyncStorage.getItem("token_login");
+        if (token !== null) {
+          const tokenValue = JSON.parse(token);
+          const participanteData = await axios.get(`https://jinis-api.vercel.app/usuarios/${tokenValue.id}`);
+          setUsuario(participanteData.data.data);
+          const eventosAsistidosResponse = await axios.get("https://jinis-api.vercel.app/eventos-asistidos");
+          const eventosAsistidosFilter = eventosAsistidosResponse.data.data.filter(
+            (eventoAsistido: EventoAsistido) => eventoAsistido.ID_USUARIO === Number(tokenValue.id)
+          );
+          setEventosAsistidos(eventosAsistidosFilter);
+
+          const eventosResponse = await axios.get("https://jinis-api.vercel.app/eventos");
+          setEventos(eventosResponse.data.data);
+        }
       } catch (error) {
         console.error(error);
       }
     };
     getData();
   }, []);
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <Image
-          source={require("@/assets/images/partial-react-logo.png")}
-          style={styles.reactLogo}
-        />
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">
-          {participante?.NOMBRES +
-            " " +
-            participante?.APELLIDO_PATERNO +
-            " " +
-            participante?.APELLIDO_MATERNO}
-        </ThemedText>
-        <ThemedText type='title'>Usuario</ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}
-          to see changes. Press{" "}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: "cmd + d", android: "cmd + m" })}
-          </ThemedText>{" "}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this
-          starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{" "}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText>{" "}
-          to get a fresh <ThemedText type="defaultSemiBold">app</ThemedText>{" "}
-          directory. This will move the current{" "}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{" "}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-      <CerrarSesion/>
-    </ParallaxScrollView>
+    <SafeAreaProvider style={{ display:"flex", justifyContent:"center",alignItems:"center"}}>
+      <ScrollView>
+        <ThemedView style={styles.titleContainer}>
+          <ThemedText type="title">
+            {usuario ? `${usuario.NOMBRES} ${usuario.APELLIDO_PATERNO} ${usuario.APELLIDO_MATERNO}` : 'Cargando...'}
+          </ThemedText>
+
+        </ThemedView>
+
+        {/* Sección de Perfil */}
+        <ThemedView style={styles.sectionContainer}>
+          <ThemedText type="subtitle">Información de Perfil</ThemedText>
+          <View style={styles.tableContainer}>
+            <View style={styles.tableRow}>
+              <Text style={styles.tableCellLabel}>DNI:</Text>
+              <Text style={styles.tableCell}>{usuario?.DNI}</Text>
+            </View>
+            <View style={styles.tableRow}>
+              <Text style={styles.tableCellLabel}>Email:</Text>
+              <Text style={styles.tableCell}>{usuario?.CORREO_ELECTRONICO}</Text>
+            </View>
+            <View style={styles.tableRow}>
+              <Text style={styles.tableCellLabel}>Teléfono:</Text>
+              <Text style={styles.tableCell}>{usuario?.TELEFONO}</Text>
+            </View>
+          </View>
+        </ThemedView>
+
+        <ThemedView style={styles.sectionContainer}>
+          <ThemedText style={{marginBottom: 12}} type="subtitle">Eventos Asistidos</ThemedText>
+          <View style={styles.section}>
+            {eventosAsistidos.slice(0, maxEventos).map((eventoAsistido) => (
+              <View key={eventoAsistido.ID_EVENTO_ASISTIDO} style={styles.eventItem}>
+                <Text style={styles.eventItemText}>
+                  {getEventoNombre(eventoAsistido.ID_EVENTO)}
+                </Text>
+                <Text style={styles.eventItemDate}>
+                  Fecha de Asistencia: {new Date(eventoAsistido.FECHA_ASISTENCIA).toLocaleDateString()}
+                </Text>
+              </View>
+            ))}
+            {eventosAsistidos.length > maxEventos && (
+              <Pressable style={styles.showMoreButton} onPress={() => setMaxEventos(maxEventos + 4)}>
+                <Text style={styles.showMoreButtonText}>Mostrar Más</Text>
+              </Pressable>
+            )}
+          </View>
+        </ThemedView>
+        <CerrarSesion />
+
+      </ScrollView>
+    </SafeAreaProvider>
   );
 }
 
@@ -84,17 +104,68 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    justifyContent: "space-between",
+    padding: 20,
+    backgroundColor: '#f0f0f0'
   },
-  stepContainer: {
-    gap: 8,
+  sectionContainer: {
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    marginBottom:14,
+    borderRadius:15
+  },
+  tableContainer: {
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    overflow: 'hidden',
+    width:"auto",
+    maxWidth:700
+  },
+  tableRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    padding: 10,
+  },
+  tableCellLabel: {
+    flex: 1,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  tableCell: {
+    flex: 2,
+    color: '#666'
+  },
+  section: {
+    marginBottom: 16,
+  },
+  eventItem: {
+    padding: 10,
+    backgroundColor: "#e0e0e0",
+    borderRadius: 8,
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
+  eventItemText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  eventItemDate: {
+    fontSize: 14,
+    color: "#666",
+  },
+  showMoreButton: {
+    padding: 10,
+    backgroundColor: "#007bff",
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  showMoreButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

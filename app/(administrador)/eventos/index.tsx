@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, Image, Platform, View, Text, Pressable, ActivityIndicator } from 'react-native';
+import { StyleSheet, Image, Platform, View, Text, Pressable, ActivityIndicator, ScrollView } from 'react-native';
 import React, { useEffect, useState } from "react";
 import { Evento } from "@/interfaces";
 import axios from "axios";
@@ -37,7 +37,7 @@ export default function Eventos() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {eventos.map((evento) => (
         <View key={`eventos/${evento.ID_EVENTO}`} style={styles.eventItem}>
             <Text style={styles.eventTitle}>{evento.NOMBRE}</Text>
@@ -49,7 +49,7 @@ export default function Eventos() {
           
         </View>
       ))}
-    </View>
+    </ScrollView>
   );
 }
 

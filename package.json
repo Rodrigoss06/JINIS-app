@@ -44,6 +44,7 @@
     "react-native-svg": "15.2.0",
     "react-native-web": "~0.19.10",
     "react-qr-code": "^2.0.15",
+    "socket.io-client": "^4.7.5",
     "stream-chat": "^8.37.0"
   },
   "devDependencies": {
