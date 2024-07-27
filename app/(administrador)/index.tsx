@@ -26,18 +26,23 @@ export default function App() {
         const token = await AsyncStorage.getItem("token_login");
         if (token !== null) {
           const tokenValue = JSON.parse(token);
+          console.log(tokenValue)
           const participanteData = await axios.get(`https://jinis-api.vercel.app/usuarios/${tokenValue.id}`);
           setUsuario(participanteData.data.data);
           const eventosAsistidosResponse = await axios.get("https://jinis-api.vercel.app/eventos-asistidos");
+          console.log(eventosAsistidosResponse)
           const eventosAsistidosFilter = eventosAsistidosResponse.data.data.filter(
             (eventoAsistido: EventoAsistido) => eventoAsistido.ID_USUARIO === Number(tokenValue.id)
           );
+          console.log(eventosAsistidosFilter)
           setEventosAsistidos(eventosAsistidosFilter);
-
+          console.log(222222222)
           const eventosResponse = await axios.get("https://jinis-api.vercel.app/eventos");
+          console.log(eventosResponse)
           setEventos(eventosResponse.data.data);
         }
       } catch (error) {
+        console.log(11111111111111)
         console.error(error);
       }
     };
