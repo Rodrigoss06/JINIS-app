@@ -83,6 +83,24 @@ export default function TabLayoutAdministrador() {
         }}
       />
       <Tabs.Screen
+        name="registrarAsistencia"
+        options={{
+          title: 'Registro Asistencia',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'checkmark' : 'checkmark-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="registrarComida"
+        options={{
+          title: 'Registro Comida',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'checkmark' : 'checkmark-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="codigoQR"
         options={{
           title: "CodigoQR",

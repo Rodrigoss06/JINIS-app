@@ -27,7 +27,16 @@ export default function TabLayoutColaborador() {
       <Tabs.Screen
         name="registrarAsistencia"
         options={{
-          title: 'Registro',
+          title: 'Registro Asistencia',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'checkmark' : 'checkmark-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="registrarComida"
+        options={{
+          title: 'Registro Comida',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'checkmark' : 'checkmark-outline'} color={color} />
           ),
