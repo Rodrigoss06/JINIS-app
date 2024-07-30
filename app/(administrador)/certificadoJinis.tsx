@@ -1,14 +1,14 @@
-import { StyleSheet, Text, View, FlatList, Pressable } from "react-native";
+import { StyleSheet, Text, View, FlatList, Pressable, Dimensions } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Evento, EventoAsistido, Participante } from "@/interfaces";
 import axios from "axios";
 
+const { width } = Dimensions.get("window");
+
 export default function CertificadoJinis() {
   const [usuarios, setUsuarios] = useState<Participante[]>([]);
-  const [eventosAsistidos, setEventosAsistidos] = useState<EventoAsistido[]>(
-    []
-  );
-  const [isDisabled,setIsDisabled] = useState(new Date('2024-10-30')> new Date())
+  const [eventosAsistidos, setEventosAsistidos] = useState<EventoAsistido[]>([]);
+  const [isDisabled, setIsDisabled] = useState(new Date('2024-10-30') > new Date());
   const [eventos, setEventos] = useState<Evento[]>([]);
 
   useEffect(() => {
@@ -29,6 +29,13 @@ export default function CertificadoJinis() {
     getData();
   }, []);
 
+  // Función para calcular el porcentaje de asistencia
+  const calculateAttendancePercentage = (usuario: Participante) => {
+    return (
+      ((eventosAsistidos?.filter(evento => evento.ID_USUARIO === usuario.ID_USUARIO).length / eventos?.length) * 100).toFixed(2)
+    );
+  };
+
   return (
     <View style={styles.contenedor}>
       <View style={styles.generalData}>
@@ -42,7 +49,7 @@ export default function CertificadoJinis() {
             )).length}
           </Text>
         </View>
-        <Pressable style={[styles.button, isDisabled? styles.disabledButton : styles.enabledButton]} disabled={isDisabled}>
+        <Pressable style={[styles.button, isDisabled ? styles.disabledButton : styles.enabledButton]} disabled={isDisabled}>
           <Text style={styles.buttonText}>Enviar certificados</Text>
         </Pressable>
       </View>
@@ -64,7 +71,7 @@ export default function CertificadoJinis() {
               <Text style={styles.tableCell}>{item.DNI}</Text>
               <Text style={styles.tableCell}>{item.CORREO_ELECTRONICO}</Text>
               <Text style={styles.tableCell}>
-                {((eventosAsistidos?.filter(evento => evento.ID_USUARIO === item.ID_USUARIO).length / eventos?.length) * 100).toFixed(2)}%
+                {calculateAttendancePercentage(item)}%
               </Text>
             </View>
           )}
@@ -77,13 +84,14 @@ export default function CertificadoJinis() {
 const styles = StyleSheet.create({
   contenedor: {
     flex: 1,
-    flexDirection: "row",
+    flexDirection: width > 600 ? "row" : "column", // Cambia la dirección de flex en función del ancho de la pantalla
     padding: 20,
     backgroundColor: "#f8f9fa",
   },
   generalData: {
-    width: "40%",
-    paddingRight: 20,
+    width: width > 600 ? "40%" : "100%", // Ajusta el ancho en función del tamaño de la pantalla
+    paddingRight: width > 600 ? 20 : 0,
+    marginBottom: width > 600 ? 0 : 20, // Añade margen inferior para dispositivos móviles
   },
   title: {
     fontSize: 24,
@@ -115,7 +123,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   tableContainer: {
-    width: "60%",
+    width: width > 600 ? "60%" : "100%", // Ajusta el ancho en función del tamaño de la pantalla
   },
   tableHeader: {
     flexDirection: "row",
@@ -129,6 +137,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     color: "#007bff",
+    fontSize: width > 600 ? 14 : 12, // Ajusta el tamaño de la fuente en función del tamaño de la pantalla
   },
   tableRow: {
     flexDirection: "row",
@@ -140,5 +149,6 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "center",
     color: "#333",
+    fontSize: width > 600 ? 14 : 12, // Ajusta el tamaño de la fuente en función del tamaño de la pantalla
   },
 });

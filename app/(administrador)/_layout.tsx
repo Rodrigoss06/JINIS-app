@@ -1,13 +1,11 @@
 import React, { useEffect } from "react";
-import { Redirect, Tabs } from "expo-router";
+import { Tabs } from "expo-router"; // Eliminamos `Redirect` porque no parece ser utilizado en este fragmento
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
-
 export default function TabLayoutAdministrador() {
   const colorScheme = useColorScheme();
-
 
   return (
     <Tabs
@@ -15,7 +13,6 @@ export default function TabLayoutAdministrador() {
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
       }}
-      
     >
       <Tabs.Screen
         name="index"
@@ -45,13 +42,10 @@ export default function TabLayoutAdministrador() {
         name="eventos/[id]"
         options={{
           title: "Evento Detalle",
-          href:null,
-          
+          href: null,
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={
-                focused ? "information-circle" : "information-circle-outline"
-              }
+              name={focused ? "information" : "information-outline"}
               color={color}
             />
           ),
@@ -72,11 +66,11 @@ export default function TabLayoutAdministrador() {
       <Tabs.Screen
         name="usuarios/[id]"
         options={{
-          href:null,
-          title: "Usuario detalles",
+          href: null,
+          title: "Usuario Detalles",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "people" : "people-outline"}
+              name={focused ? "person" : "person-outline"}
               color={color}
             />
           ),
@@ -85,25 +79,44 @@ export default function TabLayoutAdministrador() {
       <Tabs.Screen
         name="registrarAsistencia"
         options={{
-          title: 'Registro Asistencia',
+          title: "Asistencia",
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'checkmark' : 'checkmark-outline'} color={color} />
+            <TabBarIcon
+              name={focused ? "checkmark-circle" : "checkmark-circle-outline"}
+              color={color}
+            />
           ),
         }}
       />
       <Tabs.Screen
         name="registrarComida"
         options={{
-          title: 'Registro Comida',
+          title: "Comida",
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'checkmark' : 'checkmark-outline'} color={color} />
+            <TabBarIcon
+              name={focused ? "restaurant" : "restaurant-outline"}
+              color={color}
+            />
           ),
         }}
       />
       <Tabs.Screen
+  name="certificadoJinis"
+  options={{
+    title: "Certificados",
+    tabBarIcon: ({ color, focused }) => (
+      <TabBarIcon
+        name={focused ? "ribbon" : "ribbon-outline"} // Cambia aquí el nombre del icono
+        color={color}
+      />
+    ),
+  }}
+/>
+
+      <Tabs.Screen
         name="codigoQR"
         options={{
-          title: "CodigoQR",
+          title: "Código QR",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "qr-code" : "qr-code-outline"}

@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,19 +8,22 @@ import {
   Modal,
   FlatList,
   Button,
+  Dimensions
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import { ThemedView } from "@/components/styleComponents/ThemedView";
 import axios from "axios";
 import { Evento, Horario, Participante } from "@/interfaces";
 import EscanerQR from "@/components/EscanerQr";
 import { Ionicons } from "@expo/vector-icons";
 
+// Obtener las dimensiones de la pantalla
+const { width } = Dimensions.get("window");
+
 function RegistrarAsistencia() {
   const [showCamera, setShowCamera] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [eventos, setEventos] = useState<Evento[]>([]);
-  const [eventosFiltrados,setEventosFiltrados] = useState<Evento[]>([])
+  const [eventosFiltrados, setEventosFiltrados] = useState<Evento[]>([]);
   const [horarios, setHorarios] = useState<Horario[]>([]);
   const [eventoSeleccionado, setEventoSeleccionado] = useState<Evento>();
   const [usuario, setUsuario] = useState<Participante>();
@@ -178,7 +182,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    padding: 20,
+    padding: width * 0.05, // Responsive padding
     backgroundColor: "#f8f9fa",
   },
   title: {
@@ -186,6 +190,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     color: "#333",
+    width: "100%",
+    textAlign: "center",
   },
   inputContainer: {
     flexDirection: "row",
@@ -199,8 +205,8 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     padding: 10,
-    width:"30%",
-    maxWidth:1000
+    width: width * 0.9, // Responsive width
+    maxWidth: 600,
   },
   input: {
     flex: 1,
@@ -223,8 +229,8 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     backgroundColor: "#e9ecef",
     alignItems: "center",
-    width:"20%",
-    maxWidth:700
+    width: width * 0.9, // Responsive width
+    maxWidth: 600,
   },
   eventText: {
     color: "#333",
@@ -235,6 +241,9 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 5,
     alignItems: "center",
+    width: width * 0.9, // Responsive width
+    maxWidth: 600,
+    marginTop: 10,
   },
   buttonText: {
     color: "#fff",
@@ -252,7 +261,9 @@ const styles = StyleSheet.create({
     padding: 20,
     borderBottomWidth: 1,
     borderColor: "#ccc",
-    width: '100%',
+    width: width * 0.9, // Responsive width
+    maxWidth: 600,
+    marginVertical: 5,
   },
   userInfo: {
     marginTop: 20,
@@ -264,7 +275,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
-    width: '100%',
+    width: width * 0.9, // Responsive width
+    maxWidth: 600,
   },
   userInfoTitle: {
     fontSize: 20,

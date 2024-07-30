@@ -1,30 +1,51 @@
-import { Ionicons } from "@expo/vector-icons";
 import {
   StyleSheet,
-  Image,
-  Platform,
   View,
   ActivityIndicator,
   Text,
   ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Participante } from "@/interfaces";
+import { Participante, TipoDocumento, TipoUsuario } from "@/interfaces";
 import axios from "axios";
 import Usuario from "@/components/usuario";
 
 export default function Usuarios() {
-  const [usuarios, setUsuarios] = useState<Participante[]>();
+  const [usuarios, setUsuarios] = useState<Participante[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [tiposDocumento, setTiposDocumento] = useState<Map<number, string>>(
+    new Map()
+  );
+  const [tiposUsuario, setTiposUsuario] = useState<Map<number, string>>(
+    new Map()
+  );
 
   useEffect(() => {
     const getData = async () => {
       try {
-        const usuariosResponse = await axios.get(
-          "https://jinis-api.vercel.app/usuarios"
-        );
+        const [usuariosResponse, tiposDocumentoResponse, tiposUsuarioResponse] =
+          await Promise.all([
+            axios.get("https://jinis-api.vercel.app/usuarios"),
+            axios.get("https://jinis-api.vercel.app/tipo-documento"),
+            axios.get("https://jinis-api.vercel.app/tipos-usuarios"),
+          ]);
+
         setUsuarios(usuariosResponse.data.data);
+
+        // Crear un mapa de tipos de documento
+        const docMap = new Map<number, string>();
+        tiposDocumentoResponse.data.data.forEach((tipo: TipoDocumento) => {
+          docMap.set(tipo.ID_TIPO_DOCUMENTO, tipo.DESCRIPCION);
+        });
+        setTiposDocumento(docMap);
+
+        // Crear un mapa de tipos de usuario
+        const userMap = new Map<number, string>();
+        tiposUsuarioResponse.data.data.forEach((tipo: TipoUsuario) => {
+          userMap.set(tipo.ID_TIPO_USUARIO, tipo.DESCRIPCION);
+        });
+        setTiposUsuario(userMap);
       } catch (err) {
         console.log(err);
         setError("Error al cargar los eventos");
@@ -54,10 +75,13 @@ export default function Usuarios() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Lista de Usuarios</Text>
-      {usuarios?.map((usuario) => (
-        <View style={styles.userContainer} key={usuario.ID_USUARIO}>
-          <Usuario usuario={usuario} />
-        </View>
+      {usuarios.map((usuario) => (
+        <Usuario
+          key={usuario.ID_USUARIO}
+          usuario={usuario}
+          tipoDocumento={tiposDocumento.get(usuario.ID_TIPO_DOCUMENTO)}
+          tipoUsuario={tiposUsuario.get(usuario.ID_TIPO_USUARIO)}
+        />
       ))}
     </ScrollView>
   );
@@ -65,9 +89,10 @@ export default function Usuarios() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: "#f0f0f0",
     flexGrow: 1,
+    backgroundColor: "#f0f0f0",
+    paddingHorizontal: 8, // Reduce el espacio lateral
+    paddingVertical: 12, // Reduce el espacio superior e inferior
   },
   loadingContainer: {
     flex: 1,
@@ -89,19 +114,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 10, // Reduce el espacio debajo del título
     textAlign: "center",
     color: "#333",
-  },
-  userContainer: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
   },
 });
