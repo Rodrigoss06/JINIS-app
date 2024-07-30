@@ -59,9 +59,7 @@ export default function App() {
           <ThemedText type="title">
             {usuario ? `${usuario.NOMBRES} ${usuario.APELLIDO_PATERNO} ${usuario.APELLIDO_MATERNO}` : 'Cargando...'}
           </ThemedText>
-          <ThemedText type='title'>
-            Administrador
-          </ThemedText>
+
         </ThemedView>
 
         {/* Sección de Perfil */}
@@ -114,12 +112,13 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: '#fff', // Fondo blanco
+    backgroundColor: '#fff', 
   },
   scrollContainer: {
-    paddingHorizontal: '5%', // Márgenes laterales del 5%
+    paddingHorizontal: '5%',
     paddingVertical: 20,
-    maxWidth: '100%', // Asegura que no exceda el ancho de la pantalla
+    maxWidth: '100%',
+    minWidth:500 
   },
   titleContainer: {
     flexDirection: "row",
@@ -129,7 +128,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
     marginBottom: 14,
     borderRadius: 15,
-    maxWidth: '100%', // No excede el ancho de la pantalla
+    maxWidth: '100%',
   },
   sectionContainer: {
     padding: 20,
@@ -137,7 +136,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
     marginBottom: 14,
     borderRadius: 15,
-    maxWidth: '100%', // Asegura que no exceda el ancho de la pantalla
+    maxWidth: '100%',
   },
   tableContainer: {
     marginTop: 10,
@@ -145,7 +144,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 10,
     overflow: 'hidden',
-    width: "100%", // Ajusta automáticamente al ancho disponible
+    width: "100%",
   },
   tableRow: {
     flexDirection: 'row',
@@ -170,7 +169,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#e0e0e0",
     borderRadius: 8,
     marginBottom: 8,
-    maxWidth: '100%', // Asegura que no exceda el ancho de la pantalla
+    maxWidth: '100%', 
   },
   eventItemText: {
     fontSize: 16,

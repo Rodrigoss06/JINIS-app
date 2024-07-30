@@ -1,13 +1,16 @@
 import React from 'react';
-import { Redirect, Tabs } from 'expo-router';
+import { Tabs } from 'expo-router';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import CodigoQR from "./codigoQR";
-import Chat from "./chat";
-import HomeUsuario from "./index";
+
+// Importaciones de tus componentes
+import CodigoQR from './codigoQR';
+import Chat from './chat';
+import HomeUsuario from './index';
 
 export default function TabLayoutUsuario() {
+  // Obtener el esquema de color actual (claro u oscuro)
   const colorScheme = useColorScheme();
 
   return (
@@ -16,15 +19,18 @@ export default function TabLayoutUsuario() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
       }}>
+      {/* Pantalla de inicio */}
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: 'Inicio',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
           ),
         }}
       />
+
+      {/* Pantalla de Chat */}
       <Tabs.Screen
         name="chat"
         options={{
@@ -34,39 +40,37 @@ export default function TabLayoutUsuario() {
           ),
         }}
       />
+
+      {/* Página de Código QR */}
       <Tabs.Screen
         name="codigoQR"
         options={{
-          title: 'Codigo QR',
+          title: 'Código QR',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'qr-code' : 'qr-code-outline'} color={color} />
           ),
         }}
       />
+
+      {/* Pantalla de Chats */}
       <Tabs.Screen
         name="chat/index"
         options={{
-          title: "Chats",
+          title: 'Chats',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "calendar" : "calendar-outline"}
-              color={color}
-            />
+            <TabBarIcon name={focused ? 'chatbox-ellipses' : 'chatbox-ellipses-outline'} color={color} />
           ),
         }}
       />
+
+      {/* Pantalla de Detalles de Chat */}
       <Tabs.Screen
         name="chat/[id]"
         options={{
-          href:null,
-          
+          href: null,
+          title: 'Detalle de Chat',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={
-                focused ? "information-circle" : "information-circle-outline"
-              }
-              color={color}
-            />
+            <TabBarIcon name={focused ? 'document-text' : 'document-text-outline'} color={color} />
           ),
         }}
       />

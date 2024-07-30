@@ -94,7 +94,7 @@ export default function TabLayoutAdministrador() {
           title: "Comida",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "restaurant" : "restaurant-outline"}
+            name={focused ? 'fast-food' : 'fast-food-outline'}
               color={color}
             />
           ),
