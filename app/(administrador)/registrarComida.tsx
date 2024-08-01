@@ -23,10 +23,9 @@ export default function RegistrarComida() {
       const usuarioResponse = await axios.get(
         `https://jinis-api.vercel.app/usuarios/dni/${dni}`
       );
-      console.log(usuarioResponse.data);
       setUsuario(usuarioResponse.data.data);
-    } catch (error) {
-      console.log(error);
+      setError("")
+    } catch (error) {  
       setError("El usuario no existe");
     }
   };
@@ -37,17 +36,15 @@ export default function RegistrarComida() {
 
   const handleSubmit = async () => {
     try {
-      console.log(usuario);
       const response = await axios.post(
         "https://jinis-api.vercel.app/comidas/registro",
         { usuarioId: usuario?.ID_USUARIO }
       );
-      console.log(response);
       if (response.status === 201) {
         alert("¡Éxito!");
+        setError("")
       }
     } catch (error) {
-      console.log(error);
       setError("Registro fallido");
     }
   };
@@ -55,7 +52,7 @@ export default function RegistrarComida() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Registrar Comidas</Text>
-      {error !== "" && <Text style={styles.errorText}>{error}</Text>}
+      {error !== "" && dni!=="" && <Text style={styles.errorText}>{error}</Text>}
       
       <View style={styles.inputContainer}>
         <TextInput

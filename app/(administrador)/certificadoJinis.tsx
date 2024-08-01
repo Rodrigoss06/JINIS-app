@@ -44,7 +44,7 @@ export default function CertificadoJinis() {
           <Text style={styles.statText}>Total de estudiantes: {usuarios?.length}</Text>
           <Text style={styles.statText}>Total de eventos: {eventos.length}</Text>
           <Text style={styles.statText}>
-            Usuarios con el porcentaje 80%: {usuarios.filter((usuario) => (
+            Usuarios con el 80% de asistencia: {usuarios.filter((usuario) => (
               (eventosAsistidos?.filter(evento => evento.ID_USUARIO === usuario.ID_USUARIO).length / eventos?.length) * 100 >= 80
             )).length}
           </Text>
